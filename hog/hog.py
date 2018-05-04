@@ -109,16 +109,20 @@ def play(strategy0, strategy1, score0=0, score1=0, dice=six_sided,
     player = 0  # Which player is about to take a turn, 0 (first) or 1 (second)
     # BEGIN PROBLEM 5
     "*** YOUR CODE HERE ***"
+    player0_ann = announce_highest(0)
+    player1_ann = announce_highest(1)
+    announce_func = both(say_scores, announce_lead_changes()) # type: Func
     while score0<100 or score1 < 100:
         if player == 0: # player 0
             score0 = score0 + take_turn(strategy0(score0, score1), score1, dice)
+        else: # Player 1
+            score1 = score1 + take_turn(strategy1(score1, score0), score0, dice)
         # 每方掷骰子之后都要检查是否满足交换规则
         if is_swap(score0, score1):
             score0, score1 = score1, score0
-        else: # Player 1
-            score1 = score1 + take_turn(strategy1(score1, score0), score0, dice)
-        if is_swap(score0, score1):
-            score0, score1 = score1, score0
+        #announce_func(score0, score1)
+        player0_ann(score0)
+        player1_ann(score1)
         player = other(player)
     # END PROBLEM 5
     return score0, score1
@@ -195,6 +199,17 @@ def announce_highest(who, previous_high=0, previous_score=0):
     assert who == 0 or who == 1, 'The who argument should indicate a player.'
     # BEGIN PROBLEM 7
     "*** YOUR CODE HERE ***"
+    def func(current_score):
+        nonlocal previous_high
+        nonlocal previous_score
+        gain_score = current_score - previous_score # type: int
+        print("c= {}, p={}, g={}".format(current_score, previous_score, gain_score))
+        if gain_score > previous_high:
+            print("{0} point!, That's the biggest gain yet for player {1}".format(gain_score, who))
+            previous_high = gain_score
+        previous_score = current_score # 如果不改的话，previous_score一直为0 ???
+        return announce_highest(who, previous_high, current_score)
+    return func
     # END PROBLEM 7
 
 
@@ -262,7 +277,7 @@ def winner(strategy0, strategy1):
 
 def average_win_rate(strategy, baseline=always_roll(4)):
     """Return the average win rate of STRATEGY against BASELINE. Averages the
-    winrate when starting the game as player 0 and as player 1.
+    winrate when starting the game as player 0 and as p    layer 1.
     """
     win_rate_as_player_0 = 1 - make_averaged(winner)(strategy, baseline)
     win_rate_as_player_1 = make_averaged(winner)(baseline, strategy)
