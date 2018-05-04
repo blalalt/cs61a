@@ -23,7 +23,7 @@ def roll_dice(num_rolls, dice=six_sided):
     assert num_rolls > 0, 'Must roll at least once.'
     # BEGIN PROBLEM 1
     "*** YOUR CODE HERE ***"
-    scores = [dice() for i in range(1, num_rolls)] # type: List, 每次掷骰子的分数
+    scores = [dice() for i in range(1, num_rolls+1)] # type: List, 每次掷骰子的分数
     return 1 if (1 in scores) else sum(scores)
     # END PROBLEM 1
 
@@ -67,7 +67,9 @@ def is_swap(score0, score1):
     """Return whether one of the scores is an integer multiple of the other."""
     # BEGIN PROBLEM 4
     "*** YOUR CODE HERE ***"
-    return score0%score1==0 or score1%score0==0
+    if score0>1 and score1>1:
+        return score0%score1==0 or score1%score0==0
+    else: return False
     # END PROBLEM 4
 
 
