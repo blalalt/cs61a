@@ -249,6 +249,11 @@ def make_averaged(fn, num_samples=1000):
     """
     # BEGIN PROBLEM 8
     "*** YOUR CODE HERE ***"
+    def func(*args):
+        return [fn(*args) for i in range(num_samples)] / num_samples
+        #res = [fn(*args) for i in range(num_samples)] # type: List
+        #return sum(res)/len(res)
+    return func
     # END PROBLEM 8
 
 
@@ -262,6 +267,13 @@ def max_scoring_num_rolls(dice=six_sided, num_samples=1000):
     1
     """
     # BEGIN PROBLEM 9
+    averaged_dice = make_averaged(roll_dice, 1000) # type: Func
+    roll_times = range(1, 11) # type: List
+    res = 0; max_score = -1 # 返回的结果，和当前的最大分数
+    for i in roll_times:
+        sim_score = averaged_dice(i) # type: int 模拟投掷筛子的结果
+        if sim_score > max_score: res = i
+    return i
     "*** YOUR CODE HERE ***"
     # END PROBLEM 9
 
@@ -311,7 +323,9 @@ def bacon_strategy(score, opponent_score, margin=8, num_rolls=4):
     rolls NUM_ROLLS otherwise.
     """
     # BEGIN PROBLEM 10
-    return 4  # Replace this statement
+    # 如果触发free bacon的收益不低于8分，则返回0触发规则
+    return 0 if free_bacon(opponent_score) >= margin else num_rolls
+    #return 4  # Replace this statement
     # END PROBLEM 10
 
 
@@ -321,7 +335,11 @@ def swap_strategy(score, opponent_score, margin=8, num_rolls=4):
     NUM_ROLLS.
     """
     # BEGIN PROBLEM 11
-    return 4  # Replace this statement
+    new_score = score + free_bacon(opponent_score) # 投掷0次触发规则得出的新分数
+    gain_score = opponent_score - new_score # 如果交换，获得的增益分数
+    return 0 if ( is_swap(new_score, opponent_score) and gain_score > 0 ) \
+            else bacon_strategy(score, opponent_score, margin, num_rolls)
+    #return 4  # Replace this statement
     # END PROBLEM 11
 
 
@@ -331,7 +349,8 @@ def final_strategy(score, opponent_score):
     *** YOUR DESCRIPTION HERE ***
     """
     # BEGIN PROBLEM 12
-    return 4  # Replace this statement
+    return swap_strategy(score, opponent_score, margin=6, num_rolls=5)
+    #return 4  # Replace this statement
     # END PROBLEM 12
 
 
