@@ -272,7 +272,9 @@ def max_scoring_num_rolls(dice=six_sided, num_samples=1000):
     res = 0; max_score = -1 # 返回的结果，和当前的最大分数
     for i in roll_times:
         sim_score = averaged_dice(i) # type: int 模拟投掷筛子的结果
-        if sim_score > max_score: res = i
+        if sim_score > max_score:
+            res = i
+            max_score = sim_score
     return i
     "*** YOUR CODE HERE ***"
     # END PROBLEM 9
