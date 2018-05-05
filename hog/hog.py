@@ -208,7 +208,7 @@ def announce_highest(who, previous_high=0, previous_score=0):
             print("{0} point!, That's the biggest gain yet for player {1}".format(gain_score, who))
             previous_high = gain_score
         previous_score = current_score # 如果不改的话，previous_score一直为0 ???
-        return announce_highest(who, previous_high, current_score)
+        return announce_highest(who, previous_high, previous_score)
     return func
     # END PROBLEM 7
 
