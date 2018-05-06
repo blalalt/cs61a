@@ -35,6 +35,7 @@ def has_seven(k):
 
     return True if k%10 == 7 else has_seven(k//10)
 
+
 def summation(n, term):
 
     """Return the sum of the first n terms in the sequence defined by term.
@@ -54,7 +55,7 @@ def summation(n, term):
     """
     assert n >= 1
     "*** YOUR CODE HERE ***"
-    return reduce((lambda x, y: x+y), map(term, range(1, n+1)))
+    return reduce((lambda x, y: x+y), map(term, range(1, n+1)), 0)
 
 def square(x):
     return x * x
@@ -87,7 +88,12 @@ def accumulate(combiner, base, n, term):
     72
     """
     "*** YOUR CODE HERE ***"
-    return combiner(reduce(combiner, map(term, range(1, n+1))), base)
+    #return combiner(reduce(combiner, map(term, range(1, n+1))), base)
+    # 上述都没有考虑到n=0的情况，reduce会报错
+    #给 reduce 加一个默认初始值，这样，不管n为几，都能满足
+    # print(type(combiner), type(term)) 
+    return reduce(combiner, map(term, range(1, n+1)), base)
+    
 
 def summation_using_accumulate(n, term):
     """Returns the sum of term(1) + ... + term(n). The implementation
@@ -143,7 +149,12 @@ def filtered_accumulate(combiner, base, pred, n, term):
     ...       ['While', 'For', 'Recursion'])
     True
     """
-    def combine_if(x, y):
+    def combine_if(x, y): # x,y是已经term过的
+        # 因为 x 为reduce的第一个参数，是已经计算过的
+        if pred(y):
+            return combiner(x, y)
+        else:
+            return x
         "*** YOUR CODE HERE ***"
     return accumulate(combine_if, base, n, term)
 
@@ -169,6 +180,14 @@ def make_repeater(f, n):
     5
     """
     "*** YOUR CODE HERE ***"
+    def func(x):
+        nonlocal n
+        if n == 0: return x
+        else: 
+            n = n - 1
+            return func(f(x)) 
+    return func
+    
 
 def compose1(f, g):
     """Return a function h, such that h(x) = f(g(x))."""
@@ -247,3 +266,5 @@ if __name__ == "__main__":
     assert(has_seven(1234) == False)
     assert(has_seven(1230) == False)
     assert(check(HW_SOURCE_FILE, 'has_seven', ["Assign", "AugAssign"]) == True)
+    assert(accumulate(add, 0, 5, identity)== 15)  # 0 + 1 + 2 + 3 + 4 + 5)
+    assert(filtered_accumulate(add, 11, lambda x: False, 5, identity) == 11)# 11
