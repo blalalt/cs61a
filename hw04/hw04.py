@@ -1,5 +1,6 @@
 # coding: utf-8
 from math import *
+from functools import reduce
 HW_SOURCE_FILE = 'hw04.py'
 
 
@@ -202,8 +203,9 @@ def make_anonymous_factorial():
     >>> check(HW_SOURCE_FILE, 'make_anonymous_factorial', ['Assign', 'AugAssign', 'FunctionDef', 'Recursion'])
     True
     """
-    return lambda x: list(reduce(mul, (i for i in range(2,x+1)), 1))
+    return lambda x: reduce(mul, [i for i in range(2,x+1)], 1)
 
 if __name__ == "__main__":
     seq = [8, 49, 8, 9, 2, 1, 100, 102, 500, 30]
     squares(seq)
+    #print(make_anonymous_factorial()(5))
