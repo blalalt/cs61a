@@ -46,7 +46,7 @@ def squares(s):
     "*** YOUR CODE HERE ***"
     #print({s_v:v for s_v, v in zip(map(lambda x: sqrt(x), s), s) })
     #print({s_v:v for s_v, v in zip(map(lambda x: sqrt(x), s), s) if pow(s_v, 2) == float(v)  })
-    return list(map( int, [ s_v for s_v, v in zip(map(lambda x: sqrt(x), s), s) if pow(round(s_v), 2) == v ] ))
+    return [ int(s_v) for s_v, v in zip(map(lambda x: sqrt(x), s), s) if pow(round(s_v), 2) == v ] 
 
 
 N = 102
@@ -180,11 +180,12 @@ def count_change(amount):
     9828
     """
     "*** YOUR CODE HERE ***"
-    coins = [ 1, 2, 4, 8, 16 ]
-    if amount < 0: return 0
-    elif amount in coins: return 1
-    else:
-        return sum( map(count_change, (amount-i for i in coins)) )
+    #coins = [ 1, 2, 4, 8, 16 ]  错误
+    #if amount < 0: return 0
+    #elif amount in coins: return 1
+    #else:
+    #    return sum( map(count_change, (amount-i for i in coins)) )
+    pass
 
 ###################
 # Extra Questions #
@@ -201,7 +202,7 @@ def make_anonymous_factorial():
     >>> check(HW_SOURCE_FILE, 'make_anonymous_factorial', ['Assign', 'AugAssign', 'FunctionDef', 'Recursion'])
     True
     """
-    return 'YOUR_EXPRESSION_HERE'
+    return lambda x: list(reduce(mul, (i for i in range(2,x+1)), 1))
 
 if __name__ == "__main__":
     seq = [8, 49, 8, 9, 2, 1, 100, 102, 500, 30]
