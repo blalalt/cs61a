@@ -1,3 +1,5 @@
+import random
+
 def tree(label, branches=[]):
     """Construct a tree with the given label value and a list of branches."""
     for branch in branches:
@@ -299,7 +301,7 @@ class Account:
         while new_balance < amount:
             years += 1
             new_balance = new_balance * (1 + Account.interest)
-        return  years
+        return years
 
 class FreeChecking(Account):
     """A bank account that charges for withdrawals, but the first two are free!
@@ -522,10 +524,12 @@ def interval(a, b):
 def lower_bound(x):
     """Return the lower bound of interval x."""
     "*** YOUR CODE HERE ***"
+    return x[0]
 
 def upper_bound(x):
     """Return the upper bound of interval x."""
     "*** YOUR CODE HERE ***"
+    return x[1]
 
 def str_interval(x):
     """Return a string representation of interval x."""
@@ -551,12 +555,17 @@ def sub_interval(x, y):
     """Return the interval that contains the difference between any value in x
     and any value in y."""
     "*** YOUR CODE HERE ***"
+    # interval(-1, 2), interval(4, 8)
+    low_b = x[0] - y[1]
+    upp_b = x[1] - y[0]
+    return [low_b, upp_b]
 
 def div_interval(x, y):
     """Return the interval that contains the quotient of any value in x divided by
     any value in y. Division is implemented as the multiplication of x by the
     reciprocal of y."""
     "*** YOUR CODE HERE ***"
+    assert y[0] > 0, "divided zero"
     reciprocal_y = interval(1/upper_bound(y), 1/lower_bound(y))
     return mul_interval(x, reciprocal_y)
 
@@ -578,12 +587,12 @@ def check_par():
     >>> lower_bound(x) != lower_bound(y) or upper_bound(x) != upper_bound(y)
     True
     """
-    r1 = interval(1, 1) # Replace this line!
-    r2 = interval(1, 1) # Replace this line!
+    r1 = interval(1, 3) # Replace this line!
+    r2 = interval(1, 3) # Replace this line!
     return r1, r2
 
 def multiple_references_explanation():
-    return """The multiple reference problem..."""
+    return """r1 * r2 可能会越界"""
 
 def quadratic(x, a, b, c):
     """Return the interval that is the range of the quadratic defined by
@@ -595,6 +604,50 @@ def quadratic(x, a, b, c):
     '0 to 10'
     """
     "*** YOUR CODE HERE ***"
+    def calc(x):
+        return pow(x,2) * a + b * x + c
+    # 比较端点值和极值
+    exp = -b / (2 * a)
+    if x[0] <= exp <= x[1]: # 极值点在区间内
+        r1, r2, r3 = calc(x[0]), calc(exp), calc(x[1])
+        lower = min(r1, r2, r3)
+        upper = max(r1, r2, r3)
+    else:
+        r1, r2 = calc(x[0]), calc(x[1])
+        lower = min(r1, r2)
+        upper = max(r1, r2)
+    return [lower, upper]
+
+######################################33333333333333
+
+def improve(update, close, interval):
+    guess = random.uniform(*interval)
+    while True:
+        if not interval[0] <= guess <= interval[1] or close(guess):
+            return guess
+        guess = update(guess)
+    # while not close(guess) and interval[0] <= guess <= interval[1]:
+    #     print(guess)
+    #     guess = update(guess)
+    #return guess
+
+def approx_eq(x, y, tolerance=1e-4):
+    return abs(x - y) < tolerance
+
+def newton_update(f, df, theta=0.01):
+    def update(x):
+        return x - theta*df(x)
+    return update
+
+def newton_update2(f, df, theta=0.01):
+    def update(x):
+        return x + theta*df(x) # 步长 0.01
+    return update
+
+def find_zero(newton, f, df, interval):
+    def near_zero(x):
+        return approx_eq(df(x), 0)
+    return improve(newton(f, df), near_zero, interval)
 
 def polynomial(x, c):
     """Return the interval that is the range of the polynomial defined by
@@ -608,3 +661,40 @@ def polynomial(x, c):
     '18.0 to 23.0'
     """
     "*** YOUR CODE HERE ***"
+
+
+    def f(x):
+        res = 0
+        for i, v in enumerate(c):
+            res += v * pow(x, i)
+        return res
+
+    def df(x):
+        res = 0
+        for i, v in enumerate(c[1:]):
+            res += (i+1) * v * pow(x, i)
+        return res
+
+    # guess = random.randint(*x) # 初始迭代值
+    #print("df(0): {}".format(df(0)))
+    lw = find_zero(newton_update, f, df, x)
+    up = find_zero(newton_update2, f, df, x)
+    return [f(lw), f(up)]
+    # while True: # 求极小值
+    #     print("df: {}\n".format(df(res)))
+    #     new_res = res - df(res)
+    #     print(new_res),print()
+    #     if new_res - res < 0.0001: # 迭代停止条件, 近似极小值
+    #         lower = f(new_res)
+    #         break
+    #     res = new_res
+    #
+    # res = random.randint(*x)  # 初始迭代值
+    # lw = find_zero(f, df)
+    # while True:  # 求极大值
+    #     new_res = res + df(res)
+    #     if new_res - res < 0.0001:  # 迭代停止条件, 近似极小值
+    #         upper = f(new_res)
+    #         break
+    #     res = new_res
+    # return [lower, upper]
