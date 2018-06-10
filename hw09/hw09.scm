@@ -92,7 +92,7 @@
 )
 
 (define (exp? exp)
-  (eq? (car exp) '^)
+  (and (list? exp) (eq? (car exp) '^))
 )
 
 (define x^2 (make-exp 'x 2))
