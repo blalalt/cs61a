@@ -74,15 +74,27 @@ def has_cycle(link):
     False
     """
     "*** YOUR CODE HERE ***"
-    q = link
-    stack = [q]
-    while stack and q.rest != Link.empty:
-        if q.rest is stack[0]:
-            stack.pop(0)
+    # 使用快慢指针
+    if link == Link.empty: return False
+    def func(slow, fast):
+        if fast == Link.empty:
+            return False
+        elif fast.rest == Link.empty:
+            return False
+        elif fast == slow or slow == fast.rest:
+            return True
         else:
-            stack.append(q.rest)
-        q = q.rest
-    return False if stack else True
+            return func(slow.rest, fast.rest.rest)
+    return func(link, link.rest)
+    # q = link
+    # stack = [q]
+    # while stack and q.rest != Link.empty:
+    #     if q.rest is stack[0]:
+    #         stack.pop(0)
+    #     else:
+    #         stack.append(q.rest)
+    #     q = q.rest
+    # return False if stack else True
 
 def has_cycle_constant(link):
     """Return whether link contains a cycle.
@@ -96,21 +108,18 @@ def has_cycle_constant(link):
     False
     """
     "*** YOUR CODE HERE ***"
-    flag = link # 以link为标记
-    first_seen = 0 # 第一次看到，
-    second_seen = None # 第二次看到，看到后 flag (有条件)开始向后移动，如果能移动到第二次遇见的位置，则存在循环
-    i = 0 # 计次
-    q = link
-    while first_seen != second_seen and q.rest != Link.empty:
-        q = q.rest
-        if q is flag:
-            if not second_seen:
-                second_seen = i
-            flag = flag.rest
-            first_seen += 1
-        i += 1
-    #print("fi: {}, sec: {}".format(first_seen, second_seen))
-    return True if q.rest != Link.empty else False
+    # 代码有冗余
+    if link == Link.empty: return False
+    def func(slow, fast):
+        if fast == Link.empty:
+            return False
+        elif fast.rest == Link.empty:
+            return False
+        elif fast == slow or slow == fast.rest:
+            return True
+        else:
+            return func(slow.rest, fast.rest.rest)
+    return func(link, link.rest)
 
 
 # Q9
