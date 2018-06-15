@@ -3,7 +3,6 @@
 from scheme_primitives import *
 from scheme_reader import *
 from ucb import main, trace
-
 ##############
 # Eval/Apply #
 ##############
@@ -32,6 +31,12 @@ def scheme_eval(expr, env, _=None): # Optional third argument is ignored
     else:
         # BEGIN PROBLEM 5
         "*** YOUR CODE HERE ***"
+        procedure = scheme_eval(first, env)
+        check_procedure(procedure)
+        from functools import partial
+        se = partial(scheme_eval, env=env)
+        args = rest.map(se)
+        return scheme_apply(procedure, args, env)
         # END PROBLEM 5
 
 def self_evaluating(expr):
@@ -77,12 +82,18 @@ class Frame:
         """Define Scheme SYMBOL to have VALUE."""
         # BEGIN PROBLEM 3
         "*** YOUR CODE HERE ***"
+        self.bindings[symbol] = value
         # END PROBLEM 3
 
     def lookup(self, symbol):
         """Return the value bound to SYMBOL. Errors if SYMBOL is not found."""
         # BEGIN PROBLEM 3
         "*** YOUR CODE HERE ***"
+        frame = self
+        while frame:
+            if symbol in frame.bindings:
+                return frame.bindings[symbol]
+            frame = frame.parent
         # END PROBLEM 3
         raise SchemeError('unknown identifier: {0}'.format(symbol))
 
@@ -142,6 +153,12 @@ class PrimitiveProcedure(Procedure):
             args = args.second
         # BEGIN PROBLEM 4
         "*** YOUR CODE HERE ***"
+        try:
+            if self.use_env:
+                python_args.append(env)
+            return self.fn(*python_args)
+        except Exception:
+            raise SchemeError('wrong number of arguments were passed.')
         # END PROBLEM 4
 
 class LambdaProcedure(Procedure):
@@ -201,6 +218,10 @@ def do_define_form(expressions, env):
         check_form(expressions, 2, 2)
         # BEGIN PROBLEM 6
         "*** YOUR CODE HERE ***"
+        #print(expressions.__repr__())
+
+        env.bindings[target] = scheme_eval(expressions.second.first, env)
+        return target
         # END PROBLEM 6
     elif isinstance(target, Pair) and scheme_symbolp(target.first):
         # BEGIN PROBLEM 10
