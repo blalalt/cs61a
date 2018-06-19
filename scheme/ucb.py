@@ -52,7 +52,6 @@ def trace(fn):
         return result
     return wrapped
 
-
 def log(message):
     """Print an indented message (used with trace)."""
     print(_PREFIX + re.sub('\n', '\n' + _PREFIX, str(message)))
